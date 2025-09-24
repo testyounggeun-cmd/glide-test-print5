@@ -1,0 +1,285 @@
+﻿<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PeriPage Print (105×150mm)</title>
+<style>
+  html,body{margin:0;padding:0;background:#fff;color:#000}
+  body{font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+
+  /* 실제 출력 “종이” 박스 (px 단위는 JS에서 계산) */
+  #paper{
+    margin:0 auto; background:#fff; box-sizing:content-box;
+    /* width/height/padding 은 JS에서 px로 설정 */
+  }
+
+  /* 공통 스타일 */
+  .row{margin-bottom:8px}
+  .b{font-weight:700}
+  .hr{height:2px;background:#000;margin:8px 0}
+  table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px}
+  td,th{border:1px solid #000;padding:6px 4px;text-align:center;word-break:break-word;white-space:normal}
+  thead th{background:#eaeaea;font-weight:700}
+  .em{font-size:16px;font-weight:700;background:#e0e0e0;padding:6px;text-align:center;margin:8px 0 12px}
+  .money{font-weight:700;font-size:15px}
+
+  /* 컨트롤/미리보기/디버그 */
+  #controls{display:flex;justify-content:center;gap:8px;margin:8px 0 4px}
+  #controls button{padding:10px 16px;border:1px solid #000;background:#fff;cursor:pointer}
+  #preview{display:flex;justify-content:center;padding:8px}
+  #msg{font:12px/1.4 system-ui; text-align:center; color:#444; margin:6px 8px 6px}
+  #debug{font:11px/1.5 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;color:#666;padding:0 8px 8px}
+</style>
+</head>
+<body>
+
+<div id="paper">
+  <!-- (선택) 단게별 테스트용: test 파라미터 눈으로 확인 -->
+  <div class="em">TEST(od_sph): <span data-k="test"></span></div>
+
+  <!-- 기본 정보 -->
+  <div class="row b" style="font-size:20px; text-align:left;">
+    이 름: <span data-k="name"></span>
+  </div>
+  <div class="row b" style="font-size:16px; text-align:left;">
+    연락처: <span data-k="phone"></span>
+  </div>
+  <div class="hr"></div>
+  <div class="row b" style="font-size:16px; text-align:left;">
+    검사일: <span data-k="date"></span>
+  </div>
+  <div class="hr"></div>
+
+  <!-- OD/OS 표 -->
+  <table>
+    <colgroup>
+      <col style="width:12.5%"><col style="width:12.5%"><col style="width:12.5%"><col style="width:12.5%">
+      <col style="width:12.5%"><col style="width:12.5%"><col style="width:12.5%"><col style="width:12.5%">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>구분</th><th>SPH</th><th>CYL</th><th>AXIS</th><th>ADD</th><th>단안PD</th><th>PRISM △</th><th>BASE</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="b" style="font-size:14px;">■ OD</td>
+        <td><span data-k="od_sph"></span></td>
+        <td><span data-k="od_cyl"></span></td>
+        <td><span data-k="od_axis"></span></td>
+        <td><span data-k="od_add"></span></td>
+        <td><span data-k="od_pd"></span></td>
+        <td><span data-k="od_prism"></span></td>
+        <td><span data-k="od_base"></span></td>
+      </tr>
+      <tr>
+        <td class="b" style="font-size:14px;">■ OS</td>
+        <td><span data-k="os_sph"></span></td>
+        <td><span data-k="os_cyl"></span></td>
+        <td><span data-k="os_axis"></span></td>
+        <td><span data-k="os_add"></span></td>
+        <td><span data-k="os_pd"></span></td>
+        <td><span data-k="os_prism"></span></td>
+        <td><span data-k="os_base"></span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 양안 PD -->
+  <div class="em">양안 PD: <span data-k="pd"></span></div>
+
+  <!-- 비고 -->
+  <div class="row b" style="font-size:14px; text-align:left;">
+    비고: <span data-k="remark"></span>
+  </div>
+
+  <!-- 테 / 안경렌즈 + 가격 -->
+  <table style="margin:0 0 12px">
+    <colgroup><col style="width:33%"><col style="width:33%"><col style="width:34%"></colgroup>
+    <thead><tr><th>항목</th><th>제품</th><th>가격</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="b" style="font-size:14px">테</td>
+        <td><span data-k="frame_brand"></span></td>
+        <td><span data-k="frame_price"></span> 원</td>
+      </tr>
+      <tr>
+        <td class="b" style="font-size:14px">안경렌즈</td>
+        <td><span data-k="lens_product"></span></td>
+        <td><span data-k="lens_price"></span> 원</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 금액 -->
+  <table>
+    <colgroup><col style="width:33%"><col style="width:33%"><col style="width:34%"></colgroup>
+    <thead><tr><th>총액</th><th>선금</th><th>잔금</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span data-k="sum"></span> 원</td>
+        <td><span data-k="deposit"></span> 원</td>
+        <td class="money"><span data-k="balance"></span> 원</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div id="controls">
+  <button id="printBtn">출력하기</button>
+  <button id="saveBtn">PNG 저장</button>
+</div>
+<div id="preview"></div>
+<div id="msg">자동 공유가 바로 안 뜨면 [출력하기] 또는 [PNG 저장]을 눌러 주세요.</div>
+<div id="debug"></div>
+
+<script>
+(function(){
+  const sp = new URL(location.href).searchParams;
+
+  /* ===== 안전 보정: 키 누락/오입력 대응 =====
+     - 정상: sp.get(key)
+     - 보조1: key=od_sph면 test 파라미터로 대체 허용
+     - 보조2: '&-3.00=-3.00' 같은 "값=값" 패턴이 있으면 숫자 필드만 보정  */
+  function smartGet(key, d=""){
+    // 정상 케이스
+    let v = sp.get(key);
+    if (v !== null && v !== "") return decodeURIComponent(v);
+
+    // 보조1: 단계 테스트용 - od_sph 비었으면 test 값 사용
+    if (key === "od_sph") {
+      const t = sp.get("test");
+      if (t !== null && t !== "") return decodeURIComponent(t);
+    }
+
+    // 보조2: 잘못된 쿼리(&-3.00=-3.00) 수습 (숫자 필드에 한정)
+    const numericKeys = ["od_sph","od_cyl","od_axis","od_add","od_pd","od_prism","od_base",
+                         "os_sph","os_cyl","os_axis","os_add","os_pd","os_prism","os_base",
+                         "pd","frame_price","lens_price","sum","deposit","balance"];
+    if (numericKeys.includes(key)) {
+      for (const [k,val] of sp.entries()){
+        if (k === val && /^-?\d+(\.\d+)?$/.test(k)) return k; // 숫자 같으면 값으로 사용
+      }
+    }
+    return d;
+  }
+
+  // (선택) 디버그 덤프
+  try{
+    const dump = Object.fromEntries(sp.entries());
+    const dbg = document.getElementById('debug');
+    if (dbg) dbg.textContent = "Query:\n" + JSON.stringify(dump, null, 2);
+  }catch(e){}
+
+  /* ===== 1) 용지/여백(mm) → px 계산 ===== */
+  const mmToPx = (mm, dpi) => Math.round((mm/25.4) * dpi);
+  const mmW = parseFloat(smartGet('mmw','105'));
+  const mmH = parseFloat(smartGet('mmh','150'));
+  const dpi  = parseInt(smartGet('dpi','300'),10);
+  const mmMarginH = parseFloat(smartGet('mmlr','6'));   // 좌/우
+  const mmMarginV = parseFloat(smartGet('mmtb','15'));  // 상/하
+
+  const W = mmToPx(mmW, dpi);
+  const H = mmToPx(mmH, dpi);
+  const padX = mmToPx(mmMarginH, dpi);
+  const padY = mmToPx(mmMarginV, dpi);
+
+  const paper = document.getElementById('paper');
+  paper.style.width  = W + 'px';
+  paper.style.height = H + 'px';
+  paper.style.padding = `${padY}px ${padX}px`;
+
+  /* ===== 2) 동적 값 주입 ===== */
+  document.querySelectorAll('[data-k]').forEach(el=>{
+    const key = el.getAttribute('data-k');
+    const v = smartGet(key, "");
+    if (v !== "") el.textContent = v;
+  });
+
+  // 금액 자동 포맷
+  ['frame_price','lens_price','sum','deposit','balance'].forEach(k=>{
+    const v = smartGet(k,"");
+    if (v !== ""){
+      const n = Number(String(v).replace(/[^\d.-]/g,''));
+      const t = isFinite(n) ? n.toLocaleString() : v;
+      const el = document.querySelector(`[data-k="${k}"]`);
+      if (el) el.textContent = t;
+    }
+  });
+
+  /* ===== 3) HTML → PNG → 공유/저장 ===== */
+  async function renderToCanvas(){
+    // foreignObject SVG → 이미지 → 캔버스
+    const svg =
+      `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
+         <foreignObject width="100%" height="100%">
+           ${new XMLSerializer().serializeToString(paper)}
+         </foreignObject>
+       </svg>`;
+    const svgBlob = new Blob([svg], {type:'image/svg+xml;charset=utf-8'});
+    const url = URL.createObjectURL(svgBlob);
+
+    const img = new Image();
+    await new Promise((res, rej)=>{ img.onload=res; img.onerror=rej; img.src=url; });
+
+    const canvas = document.createElement('canvas');
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    ctx.fillStyle = '#fff'; ctx.fillRect(0,0,W,H);
+    ctx.drawImage(img, 0, 0);
+
+    URL.revokeObjectURL(url);
+    return canvas;
+  }
+
+  async function htmlToPngAndShare(){
+    const canvas = await renderToCanvas();
+
+    // 미리보기
+    const preview = document.getElementById('preview');
+    const shot = canvas.toDataURL('image/png');
+    preview.innerHTML = `<img src="${shot}" style="max-width:100%;height:auto" />`;
+
+    // 공유
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    const file = new File([blob], (smartGet('name','print')||'print')+'.png', {type:'image/png'});
+
+    try{
+      if (navigator.canShare && navigator.canShare({files:[file]})) {
+        await navigator.share({ files:[file], title:'Print', text:'' });
+      } else if (navigator.share) {
+        await navigator.share({ title:'Print', url: shot });
+      } else {
+        document.getElementById('msg').textContent = '자동 공유 미지원 브라우저입니다. [PNG 저장]을 사용하세요.';
+      }
+    }catch(e){
+      document.getElementById('msg').textContent = '공유가 취소되었거나 실패했습니다. [PNG 저장]을 사용하세요.';
+    }
+  }
+
+  async function savePng(){
+    const canvas = await renderToCanvas();
+    canvas.toBlob((blob)=>{
+      const a = document.createElement('a');
+      const dl = URL.createObjectURL(blob);
+      a.href = dl;
+      a.download = (smartGet('name','print')||'print') + '.png';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(dl);
+    }, 'image/png');
+  }
+
+  // 버튼
+  document.getElementById('printBtn').addEventListener('click', ()=>htmlToPngAndShare().catch(()=>{}));
+  document.getElementById('saveBtn').addEventListener('click', ()=>savePng().catch(()=>{}));
+
+  // 자동 시도(모바일 공유 유도), 안 되면 버튼 사용
+  setTimeout(()=>{ htmlToPngAndShare().catch(()=>{}); }, 250);
+})();
+</script>
+</body>
+</html>
