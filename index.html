@@ -143,9 +143,6 @@
   </div>
 
   <div id="preview"></div>
-  <div id="help">
-    * iPad/Safari에서 공유가 안 뜨면 <b>PNG 저장</b> 후 PeriPage 앱으로 열어 인쇄하세요. <br>
-    * 값이 비면 빈칸으로 출력됩니다. 금액은 자동으로 3자리 콤마가 적용됩니다.
   </div>
 </div>
 
@@ -267,19 +264,21 @@
     }
   }
 
-  async function savePng(){
-    const { canvas } = await makeShot();
-    canvas.toBlob((blob)=>{
-      const a = document.createElement('a');
-      const dl = URL.createObjectURL(blob);
-      a.href = dl;
-      a.download = (smartGet('name','print')||'print') + '.png';
-      document.body.appendChild(a);
-      a.click(); a.remove();
-      URL.revokeObjectURL(dl);
-    }, 'image/png');
-    setStatus('PNG 저장 완료');
-  }
+async function savePng(){
+  const { canvas } = await makeShot();
+  const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = (smartGet('name','print')||'print') + '.png';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 1000);
+  setStatus('PNG 저장 완료');
+}
 
   function browserPrint(){
     window.print();
@@ -302,3 +301,4 @@
 </script>
 </body>
 </html>
+
